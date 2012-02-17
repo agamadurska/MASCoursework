@@ -1,4 +1,4 @@
-package hospital;
+package patient;
 
 import java.util.LinkedList;
 import java.util.List;
