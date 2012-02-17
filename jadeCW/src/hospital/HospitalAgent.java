@@ -10,7 +10,6 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPANames;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.Property;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 /**
@@ -83,7 +82,8 @@ public class HospitalAgent extends Agent {
 
 	protected void takeDown() {
 	    for (Entry<AID, Integer> e : appointmentAllocation.entrySet()) {
-			System.out.println(getLocalName() + ":" + e.getKey().getLocalName() + ": Appointment " + e.getValue());
+			System.out.println(getLocalName() + ":" + e.getKey().getLocalName() +
+					": Appointment " + e.getValue());
 	    }
 	}
 }

@@ -44,32 +44,33 @@ public class PatientAgent extends Agent {
 		templateSd.setType(serviceType);
 		template.addServices(templateSd);
   		
-		addBehaviour(new SubscriptionInitiator(this, DFService.createSubscriptionMessage(this, getDefaultDF(), template, null)) {
-			protected void handleInform(ACLMessage inform) {
-
-  			try {
-				DFAgentDescription[] results = DFService.decodeNotification(inform.getContent());
-		  		if (results.length > 0) {
-		  			for (int i = 0; i < results.length; ++i) {
-		  				DFAgentDescription dfd = results[i];
-		  				AID provider = dfd.getName();
-		  				// The same agent may provide several services;
-		  				Iterator it = dfd.getAllServices();
-		  				while (it.hasNext()) {
-		  					ServiceDescription sd = (ServiceDescription) it.next();
-		  					if (sd.getType().equals(serviceType)) {
-		  						storeProvider(provider);
-		  					}
-		  				}
-		  			}
-		  		}	
-	  			System.out.println();
-		  	}
-		  	catch (FIPAException fe) {
-		  		fe.printStackTrace();
-		  	}
-			}
-		} );
+		addBehaviour(new SubscriptionInitiator(
+				this, DFService.createSubscriptionMessage(this, getDefaultDF(), template, null)) {
+					protected void handleInform(ACLMessage inform) {	
+			  			try {
+							DFAgentDescription[] results
+								= DFService.decodeNotification(inform.getContent());
+	
+					  		if (results.length > 0) {
+					  			for (int i = 0; i < results.length; ++i) {
+					  				DFAgentDescription dfd = results[i];
+					  				AID provider = dfd.getName();
+					  				// The same agent may provide several services;
+					  				Iterator it = dfd.getAllServices();
+					  				while (it.hasNext()) {
+					  					ServiceDescription sd = (ServiceDescription) it.next();
+					  					if (sd.getType().equals(serviceType)) {
+					  						storeProvider(provider);
+					  					}
+					  				}
+					  			}
+					  		}
+				  			System.out.println();
+					  	}catch (FIPAException fe) {
+					  		fe.printStackTrace();
+					  	}
+					}
+				});
 	}
 
 	protected void storeProvider(AID provider) {
@@ -100,24 +101,20 @@ public class PatientAgent extends Agent {
 		return provider != null;
 	}
 
-	public Appointment requestAppointment() {
-		ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
-		msg.addReceiver(provider);
-		send(msg);
-		ACLMessage reply = blockingReceive();
-		if (reply.getPerformative() == ACLMessage.REFUSE) {
-			return null;
-		}
-
-		int appNumber = Integer.parseInt(reply.getContent());
-		return new Appointment(appNumber, priorityMap.get(appNumber));
-	}
-
 	public void updateAppointment(Appointment alocatedApp) {
 		this.allocatedAppointment = alocatedApp;		
 	}
 
 	protected void takeDown() {
-        System.out.println(getLocalName() + ": Appointment " + (allocatedAppointment == null ? "null" : allocatedAppointment.getNumber()));
+        System.out.println(getLocalName() + ": Appointment " + (allocatedAppointment == null ?
+        		"null" : allocatedAppointment.getNumber()));
     }
+
+	public AID getProvider() {
+		return provider;
+	}
+
+	public Integer getPriority(int appNumber) {
+		return priorityMap.get(appNumber);
+	}
 }
