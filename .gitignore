@@ -1,0 +1,7 @@
+compileJade.sh
+runJade.sh
+*~
+jade/**
+jadeCW_examples/**
+readme/**
+
