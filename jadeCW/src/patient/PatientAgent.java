@@ -105,8 +105,10 @@ public class PatientAgent extends Agent {
 		msg.addReceiver(provider);
 		send(msg);
 		ACLMessage reply = blockingReceive();
-		if (reply.getPerformative() == ACLMessage.REFUSE)
+		if (reply.getPerformative() == ACLMessage.REFUSE) {
 			return null;
+		}
+
 		int appNumber = Integer.parseInt(reply.getContent());
 		return new Appointment(appNumber, priorityMap.get(appNumber));
 	}

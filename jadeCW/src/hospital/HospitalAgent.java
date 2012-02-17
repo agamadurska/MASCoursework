@@ -33,6 +33,7 @@ public class HospitalAgent extends Agent {
 
 	  	if (arguments != null) {
 	  		maxAppointments = Integer.parseInt((String)arguments[0]);
+	  		addBehaviour(new AllocateAppointment(this));
 	  	} else {
 	  		// Terminate if created without arguments.
 	  		doDelete();
@@ -65,7 +66,8 @@ public class HospitalAgent extends Agent {
 	public Integer allocateAppointment(AID sender) {
 		if (appointmentAvailable()) {
 			Integer app = nextAvailableAppointment();
-			appointmentAllocation .put(sender, app);
+			appointmentAllocation.put(sender, app);
+			nextAvailableAppointment++;
 			return app;
 		}
 		return null;
@@ -76,12 +78,12 @@ public class HospitalAgent extends Agent {
 	}
 
 	private boolean appointmentAvailable() {
-		return nextAvailableAppointment > maxAppointments;
+		return nextAvailableAppointment <= maxAppointments;
 	}
 
 	protected void takeDown() {
 	    for (Entry<AID, Integer> e : appointmentAllocation.entrySet()) {
-			System.out.println(e.getKey() + ": Appointment " + e.getValue());
+			System.out.println(getLocalName() + ":" + e.getKey().getLocalName() + ": Appointment " + e.getValue());
 	    }
 	}
 }

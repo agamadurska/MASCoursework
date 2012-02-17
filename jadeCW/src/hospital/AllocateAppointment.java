@@ -14,15 +14,14 @@ public class AllocateAppointment extends CyclicBehaviour {
 
 	@Override
 	public void action() {
-		ACLMessage reply = new ACLMessage(ACLMessage.REFUSE);
-
-		ACLMessage request = agent.blockingReceive();
-		AID sender = request.getSender();
-		Integer appNumber = agent.allocateAppointment(sender);
+		ACLMessage request = agent.blockingReceive();		
+		ACLMessage reply = request.createReply();
+		
+		reply.setPerformative(ACLMessage.REFUSE);
+		Integer appNumber = agent.allocateAppointment(request.getSender());
 
 		if (appNumber != null) {
-			reply = new ACLMessage(ACLMessage.INFORM);
-			reply.addReceiver(sender);
+			reply.setPerformative(ACLMessage.INFORM);
 			reply.setContent(appNumber.toString());
 		}
 

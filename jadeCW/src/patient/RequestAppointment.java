@@ -24,7 +24,6 @@ public class RequestAppointment extends Behaviour {
 
 	@Override
 	public boolean done() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

@@ -4,9 +4,11 @@ public class Appointment implements Comparable<Appointment> {
 	private int number;
 	private int priority;
 
-	public Appointment(int number, int priority) {
+	public Appointment(int number, Integer priority) {
 		this.number = number;
-		this.priority = priority;
+		if (priority != null) {
+			this.priority = priority;
+		}
 	}
 
 	@Override
