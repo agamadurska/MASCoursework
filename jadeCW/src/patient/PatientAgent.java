@@ -112,4 +112,8 @@ public class PatientAgent extends Agent {
 	public void updateAppointment(Appointment alocatedApp) {
 		this.allocatedAppointment = alocatedApp;		
 	}
+
+	protected void takeDown() {
+       System.out.println(getName() + ": Appointment " + allocatedAppointment.getNumber());
+    }
 }

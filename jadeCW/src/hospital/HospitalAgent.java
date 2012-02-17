@@ -2,6 +2,7 @@ package hospital;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import jade.core.AID;
 import jade.core.Agent;
@@ -76,5 +77,11 @@ public class HospitalAgent extends Agent {
 
 	private boolean appointmentAvailable() {
 		return nextAvailableAppointment > maxAppointments;
+	}
+
+	protected void takeDown() {
+	    for (Entry e : appointmentAllocation.entrySet()) {
+			System.out.println(e.getKey() + ": Appointment " + e.getValue());
+	    }
 	}
 }
