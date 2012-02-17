@@ -1,5 +1,9 @@
 package hospital;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -15,15 +19,16 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
  * @author Aga Madurska (amm208)
  *
  */
-public class HospitalAgent extends Agent{
-
+public class HospitalAgent extends Agent {
+	int maxAppointments;
+	private int nextAvailableAppointment = 0;
+	private Map<AID, Integer> appointmentAllocation = new HashMap<AID, Integer>();
 	/**
 	 * Register the maximum number of appointments.
 	 */
 	protected void setup() {
 		String serviceName = "allocate-appointments";
 	  	Object[] arguments =  getArguments();
-	  	int maxAppointments;
 
 	  	if (arguments != null) {
 	  		maxAppointments = (Integer) arguments[0];
@@ -41,12 +46,11 @@ public class HospitalAgent extends Agent{
 	  		serviceDescription.setName(serviceName);
 
 	  		// Not sure if this is needed but was in example so keeping for now.
-	  		serviceDescription.setType("appointment-allocation");
-	  		serviceDescription.addOntologies("appointment-allocation-ontology");
+	  		serviceDescription.setType("allocate-appointments");
+	  		serviceDescription.addOntologies("allocate-appointments-ontology");
 
 	  		// Agents that want to use this service need to "speak" the FIPA-SL language.
 	  		serviceDescription.addLanguages(FIPANames.ContentLanguage.FIPA_SL);
-	  		serviceDescription.addProperties(new Property("max-appointments", maxAppointments));
 
 	  		agentDecription.addServices(serviceDescription);
 	  		
@@ -56,4 +60,21 @@ public class HospitalAgent extends Agent{
 	  		fe.printStackTrace();
 	  	}
 	  }
+
+	public Integer allocateAppointment(AID sender) {
+		if (appointmentAvailable()) {
+			Integer app = nextAvailableAppointment();
+			appointmentAllocation .put(sender, app);
+			return app;
+		}
+		return null;
+	}
+
+	private Integer nextAvailableAppointment() {
+		return nextAvailableAppointment;
+	}
+
+	private boolean appointmentAvailable() {
+		return nextAvailableAppointment > maxAppointments;
+	}
 }
