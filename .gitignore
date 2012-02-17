@@ -1,7 +1,8 @@
+*.class
 compileJade.sh
 runJade.sh
 *~
 jade/**
 jadeCW_examples/**
-readme/**
-
+readme/**	
+jadeCW/bin/**
