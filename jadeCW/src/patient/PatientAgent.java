@@ -83,8 +83,10 @@ public class PatientAgent extends Agent {
   		for (String set : prioritySets) {
   			appNumbers = set.split(" ");
   			for (String number : appNumbers) {
-  				priorities.add(new Appointment(Integer.parseInt(number), priority));
-  				priorityMap.put(Integer.parseInt(number), priority);
+  				if (!number.equals("")) {
+  					priorities.add(new Appointment(Integer.parseInt(number), priority));
+  					priorityMap.put(Integer.parseInt(number), priority);
+  				}
   			}
   			priority--;
   		}
@@ -114,6 +116,6 @@ public class PatientAgent extends Agent {
 	}
 
 	protected void takeDown() {
-       System.out.println(getName() + ": Appointment " + allocatedAppointment.getNumber());
+        System.out.println(getLocalName() + ": Appointment " + (allocatedAppointment == null ? "null" : allocatedAppointment.getNumber()));
     }
 }

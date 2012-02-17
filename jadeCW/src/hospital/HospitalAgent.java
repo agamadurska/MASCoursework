@@ -32,7 +32,7 @@ public class HospitalAgent extends Agent {
 	  	Object[] arguments =  getArguments();
 
 	  	if (arguments != null) {
-	  		maxAppointments = (Integer) arguments[0];
+	  		maxAppointments = Integer.parseInt((String)arguments[0]);
 	  	} else {
 	  		// Terminate if created without arguments.
 	  		doDelete();
@@ -80,7 +80,7 @@ public class HospitalAgent extends Agent {
 	}
 
 	protected void takeDown() {
-	    for (Entry e : appointmentAllocation.entrySet()) {
+	    for (Entry<AID, Integer> e : appointmentAllocation.entrySet()) {
 			System.out.println(e.getKey() + ": Appointment " + e.getValue());
 	    }
 	}
