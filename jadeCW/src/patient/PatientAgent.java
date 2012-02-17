@@ -1,7 +1,9 @@
 package patient;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import utils.Appointment;
 
@@ -17,6 +19,7 @@ import jade.util.leap.Iterator;
 
 public class PatientAgent extends Agent {
 	
+	private Map<Integer, Integer> priorityMap = new HashMap<Integer, Integer>();
 	private List<Appointment> priorities = new LinkedList<Appointment>();
 	private Appointment allocatedAppointment;
 	private AID provider;
@@ -80,12 +83,30 @@ public class PatientAgent extends Agent {
   			appNumbers = set.split(" ");
   			for (String number : appNumbers) {
   				priorities.add(new Appointment(Integer.parseInt(number), priority));
+  				priorityMap.put(Integer.parseInt(number), priority);
   			}
   			priority--;
   		}
 	}
 
 	public boolean hasAlocatedAppointment() {
-		return allocatedAppointment == null;
+		return allocatedAppointment != null;
+	}
+
+	public boolean hasAlocationProvider() {
+		return provider != null;
+	}
+
+	public Appointment requestAppointment() {
+		ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+		msg.addReceiver(provider);
+		send(msg);
+		ACLMessage reply = blockingReceive();
+		int appNumber = Integer.parseInt(reply.getContent());
+		return new Appointment(appNumber, priorityMap.get(appNumber));
+	}
+
+	public void updateAppointment(Appointment alocatedApp) {
+		this.allocatedAppointment = alocatedApp;		
 	}
 }
