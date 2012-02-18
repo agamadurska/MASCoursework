@@ -14,13 +14,17 @@ public class RespondToProposal2 extends CyclicBehaviour {
 	@Override
 	public void action() {
 		ACLMessage request = agent.blockingReceive();
+		int proposedAppNumber = Integer.parseInt(request.getContent());
+		
 		ACLMessage reply = request.createReply();
-		
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		msg.setContent("");
-		
-		// TODO Auto-generated method stub
-
+		if (agent.isAppAvailable(proposedAppNumber)) {
+			reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+			agent.allocateAppointment(proposedAppNumber, request.getSender());
+		} else {
+			reply.setPerformative(ACLMessage.REJECT_PROPOSAL);	
+			reply.setContent(agent.getAppAgent(proposedAppNumber).getName());
+		}
+		agent.send(reply);
 	}
 
 }

@@ -20,8 +20,6 @@ public class PatientAgent extends Agent {
 	
 	private final Map<Integer, Integer> priorityMap =
 			new HashMap<Integer, Integer>();
-	private final List<Appointment> priorities =
-			new LinkedList<Appointment>();
 	private Appointment allocatedAppointment;
 	private AID provider;
 
@@ -89,7 +87,6 @@ public class PatientAgent extends Agent {
 			String[] appNumbers = set.split(" ");
 			for (String number : appNumbers) {
 				if (!number.equals("")) {
-					priorities.add(new Appointment(Integer.parseInt(number), priority));
 					priorityMap.put(Integer.parseInt(number), priority);
 				}
 			}

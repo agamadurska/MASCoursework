@@ -13,10 +13,13 @@ public class ProposeSwap extends Behaviour {
 	
 	@Override
 	public void action() {
+		Appointment appointment = agent.getAppointment();
+		int priority = agent.getPriority(appointment.getNumber());
 		
-		// TODO Auto-generated method stub
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		msg.setContent("");
+		// TODO: Get a more preferred appointment.
+		
+		ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
+		msg.setContent(String.valueOf(appointment.getNumber()));
 		msg.addReceiver(agent.getProvider());
 		agent.send(msg);
 	}

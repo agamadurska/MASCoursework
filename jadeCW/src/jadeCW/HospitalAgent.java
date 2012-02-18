@@ -1,9 +1,5 @@
 package jadeCW;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
@@ -11,6 +7,10 @@ import jade.domain.FIPAException;
 import jade.domain.FIPANames;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Simple hospital agent, storing appointments and interacting
@@ -23,8 +23,10 @@ public class HospitalAgent extends Agent {
 	
 	private int maxAppointments;
 	private int nextAvailableAppointment = 0;
-	private final Map<AID, Integer> appointmentAllocation =
+	private final Map<AID, Integer> agentAllocation =
 			new HashMap<AID, Integer>();
+	private final Map<Integer, AID> appAllocation =
+			new HashMap<Integer, AID>();
 	
 	/**
 	 * Register the maximum number of appointments.
@@ -69,13 +71,33 @@ public class HospitalAgent extends Agent {
 	public Integer allocateAppointment(AID sender) {
 		if (appointmentAvailable()) {
 			Integer app = nextAvailableAppointment();
-			appointmentAllocation.put(sender, app);
-			nextAvailableAppointment++;
+			agentAllocation.put(sender, app);
+			appAllocation.put(app, sender);
+			while (appAllocation.get(nextAvailableAppointment) != null) {
+				++nextAvailableAppointment;
+			}
 			return app;
 		}
 		return null;
 	}
 
+	public void allocateAppointment(int appointmentNumber, AID sender) {
+		agentAllocation.put(sender, appointmentNumber);
+		appAllocation.put(appointmentNumber, sender);
+		while (appAllocation.get(nextAvailableAppointment) != null) {
+			++nextAvailableAppointment;
+		}
+	}
+	
+	public AID getAppAgent(int appointmentNumber) {
+		return appAllocation.get(appointmentNumber);
+	}
+	
+	public boolean isAppAvailable(int appointmentNumber) {
+		return appointmentNumber < maxAppointments &&
+				appAllocation.get(appointmentNumber) == null;
+	}
+	
 	private Integer nextAvailableAppointment() {
 		return nextAvailableAppointment;
 	}
@@ -85,10 +107,10 @@ public class HospitalAgent extends Agent {
 	}
 
 	protected void takeDown() {
-	    for (Entry<AID, Integer> e : appointmentAllocation.entrySet()) {
+		for (Entry<AID, Integer> e : agentAllocation.entrySet()) {
 			System.out.println(getLocalName() + ":" + e.getKey().getLocalName() +
 					": Appointment " + e.getValue());
-	    }
+		}
 	}
 
 }
