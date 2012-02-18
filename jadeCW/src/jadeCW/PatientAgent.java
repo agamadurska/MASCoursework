@@ -109,6 +109,10 @@ public class PatientAgent extends Agent {
 		this.allocatedAppointment = alocatedApp;		
 	}
 
+	public Appointment getAppointment() {
+		return allocatedAppointment;
+	}
+	
 	protected void takeDown() {
 		System.out.println(getLocalName() + ": Appointment " +
 				(allocatedAppointment == null ? "null" :
@@ -117,6 +121,10 @@ public class PatientAgent extends Agent {
 
 	public AID getProvider() {
 		return provider;
+	}
+	
+	public void updateProvider(AID provider) {
+		this.provider = provider;
 	}
 
 	public Integer getPriority(int appNumber) {

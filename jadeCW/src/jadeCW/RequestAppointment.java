@@ -5,7 +5,7 @@ import jade.lang.acl.ACLMessage;
 
 public class RequestAppointment extends Behaviour {
 
-	private PatientAgent agent;
+	private final PatientAgent agent;
 
 	RequestAppointment(PatientAgent agent) {
 		this.agent = agent;
