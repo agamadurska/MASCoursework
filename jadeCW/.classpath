@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/aga/Documents/University/Imperial/Year4/MASCoursework/jadeCW/lib/http.jar"/>
-	<classpathentry kind="lib" path="/home/aga/Documents/University/Imperial/Year4/MASCoursework/jadeCW/lib/iiop.jar"/>
-	<classpathentry kind="lib" path="/home/aga/Documents/University/Imperial/Year4/MASCoursework/jadeCW/lib/jade.jar"/>
-	<classpathentry kind="lib" path="/home/aga/Documents/University/Imperial/Year4/MASCoursework/jadeCW/lib/jadeTools.jar"/>
+	<classpathentry kind="lib" path="/home/ionel/uni/4th/MAS/MASCoursework/jadeCW/lib/http.jar"/>
+	<classpathentry kind="lib" path="/home/ionel/uni/4th/MAS/MASCoursework/jadeCW/lib/iiop.jar"/>
+	<classpathentry kind="lib" path="/home/ionel/uni/4th/MAS/MASCoursework/jadeCW/lib/jade.jar"/>
+	<classpathentry kind="lib" path="/home/ionel/uni/4th/MAS/MASCoursework/jadeCW/lib/jadeTools.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,11 +1,10 @@
-package patient;
+package jadeCW;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import utils.Appointment;
 
 import jade.core.AID;
 import jade.core.Agent;
@@ -19,8 +18,10 @@ import jade.util.leap.Iterator;
 
 public class PatientAgent extends Agent {
 	
-	private Map<Integer, Integer> priorityMap = new HashMap<Integer, Integer>();
-	private List<Appointment> priorities = new LinkedList<Appointment>();
+	private final Map<Integer, Integer> priorityMap =
+			new HashMap<Integer, Integer>();
+	private final List<Appointment> priorities =
+			new LinkedList<Appointment>();
 	private Appointment allocatedAppointment;
 	private AID provider;
 
@@ -30,11 +31,11 @@ public class PatientAgent extends Agent {
 			buildPriorities((String) arguments[0]);
 			subscribeToService("allocate-appointments");
 			addBehaviour(new RequestAppointment(this));
-	  	} else {
-	  		// Terminate if created without arguments.
-	  		doDelete();
-	  		return;
-	  	}
+		} else {
+			// Terminate if created without arguments.
+			doDelete();
+			return;
+		}
 	}
 
 	private void subscribeToService(final String serviceType) {
@@ -45,19 +46,22 @@ public class PatientAgent extends Agent {
 		template.addServices(templateSd);
   		
 		addBehaviour(new SubscriptionInitiator(
-				this, DFService.createSubscriptionMessage(this, getDefaultDF(), template, null)) {
+				this, DFService.createSubscriptionMessage(
+						this, getDefaultDF(), template, null)) {
+			
 					protected void handleInform(ACLMessage inform) {	
-			  			try {
-							DFAgentDescription[] results
-								= DFService.decodeNotification(inform.getContent());
+						try {
+							DFAgentDescription[] results =
+									DFService.decodeNotification(inform.getContent());
 	
-					  		if (results.length > 0) {
-					  			for (int i = 0; i < results.length; ++i) {
-					  				DFAgentDescription dfd = results[i];
-					  				AID provider = dfd.getName();
-					  				// The same agent may provide several services;
-					  				Iterator it = dfd.getAllServices();
-					  				while (it.hasNext()) {
+							if (results.length > 0) {
+								for (int i = 0; i < results.length; ++i) {
+									DFAgentDescription dfd = results[i];
+									AID provider = dfd.getName();
+									// The same agent may provide several services;
+									
+									Iterator it = dfd.getAllServices();
+									while (it.hasNext()) {
 					  					ServiceDescription sd = (ServiceDescription) it.next();
 					  					if (sd.getType().equals(serviceType)) {
 					  						storeProvider(provider);
@@ -65,12 +69,12 @@ public class PatientAgent extends Agent {
 					  				}
 					  			}
 					  		}
-				  			System.out.println();
-					  	}catch (FIPAException fe) {
-					  		fe.printStackTrace();
-					  	}
+							System.out.println();
+						}catch (FIPAException fe) {
+							fe.printStackTrace();
+						}
 					}
-				});
+		});
 	}
 
 	protected void storeProvider(AID provider) {
@@ -78,19 +82,19 @@ public class PatientAgent extends Agent {
 	}
 
 	private void buildPriorities(String preferences) {
-  		String[] prioritySets = preferences.split("-");
-  		String[] appNumbers;
-  		int priority = prioritySets.length;
-  		for (String set : prioritySets) {
-  			appNumbers = set.split(" ");
-  			for (String number : appNumbers) {
-  				if (!number.equals("")) {
-  					priorities.add(new Appointment(Integer.parseInt(number), priority));
-  					priorityMap.put(Integer.parseInt(number), priority);
-  				}
-  			}
-  			priority--;
-  		}
+		String[] prioritySets = preferences.split("-");
+		int priority = prioritySets.length;
+		
+		for (String set : prioritySets) {
+			String[] appNumbers = set.split(" ");
+			for (String number : appNumbers) {
+				if (!number.equals("")) {
+					priorities.add(new Appointment(Integer.parseInt(number), priority));
+					priorityMap.put(Integer.parseInt(number), priority);
+				}
+			}
+			priority--;
+		}
 	}
 
 	public boolean hasAlocatedAppointment() {
@@ -106,9 +110,10 @@ public class PatientAgent extends Agent {
 	}
 
 	protected void takeDown() {
-        System.out.println(getLocalName() + ": Appointment " + (allocatedAppointment == null ?
-        		"null" : allocatedAppointment.getNumber()));
-    }
+		System.out.println(getLocalName() + ": Appointment " +
+				(allocatedAppointment == null ? "null" :
+						allocatedAppointment.getNumber()));
+  }
 
 	public AID getProvider() {
 		return provider;
@@ -117,4 +122,5 @@ public class PatientAgent extends Agent {
 	public Integer getPriority(int appNumber) {
 		return priorityMap.get(appNumber);
 	}
+
 }

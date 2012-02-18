@@ -1,11 +1,11 @@
-package hospital;
+package jadeCW;
 
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class AllocateAppointment extends CyclicBehaviour {
 
-	HospitalAgent agent;
+	private final HospitalAgent agent;
 
 	public AllocateAppointment(HospitalAgent agent) {
 		this.agent = agent;

@@ -1,4 +1,4 @@
-package hospital;
+package jadeCW;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,47 +20,51 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
  *
  */
 public class HospitalAgent extends Agent {
-	int maxAppointments;
+	
+	private int maxAppointments;
 	private int nextAvailableAppointment = 0;
-	private Map<AID, Integer> appointmentAllocation = new HashMap<AID, Integer>();
+	private final Map<AID, Integer> appointmentAllocation =
+			new HashMap<AID, Integer>();
+	
 	/**
 	 * Register the maximum number of appointments.
 	 */
 	protected void setup() {
 		String serviceName = "allocate-appointments";
-	  	Object[] arguments =  getArguments();
+	  Object[] arguments =  getArguments();
 
-	  	if (arguments != null) {
-	  		maxAppointments = Integer.parseInt((String)arguments[0]);
-	  		addBehaviour(new AllocateAppointment(this));
-	  	} else {
-	  		// Terminate if created without arguments.
-	  		doDelete();
-	  		return;
-	  	}
-	  	
-	  	// Register the service
-	  	try {
-	  		DFAgentDescription agentDecription = new DFAgentDescription();
-	  		agentDecription.setName(getAID());
-	  		ServiceDescription serviceDescription = new ServiceDescription();
-	  		serviceDescription.setName(serviceName);
-
-	  		// Not sure if this is needed but was in example so keeping for now.
-	  		serviceDescription.setType("allocate-appointments");
-	  		serviceDescription.addOntologies("allocate-appointments-ontology");
-
-	  		// Agents that want to use this service need to "speak" the FIPA-SL language.
-	  		serviceDescription.addLanguages(FIPANames.ContentLanguage.FIPA_SL);
-
-	  		agentDecription.addServices(serviceDescription);
-	  		
-	  		DFService.register(this, agentDecription);
-	  	}
-	  	catch (FIPAException fe) {
-	  		fe.printStackTrace();
-	  	}
+	  if (arguments != null) {
+	  	maxAppointments = Integer.parseInt((String)arguments[0]);
+	  	addBehaviour(new AllocateAppointment(this));
+	  } else {
+	  	// Terminate if created without arguments.
+	  	doDelete();
+	  	return;
 	  }
+	  	
+	  // Register the service
+	  try {
+	  	DFAgentDescription agentDescription = new DFAgentDescription();
+	  	agentDescription.setName(getAID());
+	  	ServiceDescription serviceDescription = new ServiceDescription();
+	  	serviceDescription.setName(serviceName);
+
+	  	// Not sure if this is needed but was in example so keeping for now.
+	  	serviceDescription.setType("allocate-appointments");
+	  	serviceDescription.addOntologies("allocate-appointments-ontology");
+
+	  	// Agents that want to use this service need to "speak" the FIPA-SL
+	  	// language.
+	  	serviceDescription.addLanguages(FIPANames.ContentLanguage.FIPA_SL);
+
+	  	agentDescription.addServices(serviceDescription);
+	  		
+	  	DFService.register(this, agentDescription);
+	  }
+	  catch (FIPAException fe) {
+	  	fe.printStackTrace();
+	  }
+	}
 
 	public Integer allocateAppointment(AID sender) {
 		if (appointmentAvailable()) {
@@ -86,4 +90,5 @@ public class HospitalAgent extends Agent {
 					": Appointment " + e.getValue());
 	    }
 	}
+
 }

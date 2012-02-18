@@ -1,7 +1,8 @@
-package utils;
+package jadeCW;
 
 public class Appointment implements Comparable<Appointment> {
-	private int number;
+
+	private final int number;
 	private int priority;
 
 	public Appointment(int number, Integer priority) {
@@ -19,4 +20,5 @@ public class Appointment implements Comparable<Appointment> {
 	public int getNumber() {
 		return number;
 	}
+
 }

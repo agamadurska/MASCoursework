@@ -1,4 +1,10 @@
 *.class
+APDescription.txt
+MTPs-Main-Container.txt
+eclipseReadme.txt
+exampleInputs.txt
+readmeJade.txt
+jadeCW/.classpath
 compileJade.sh
 runJade.sh
 *~

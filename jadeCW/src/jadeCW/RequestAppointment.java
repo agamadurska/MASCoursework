@@ -1,6 +1,5 @@
-package patient;
+package jadeCW;
 
-import utils.Appointment;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 
@@ -24,7 +23,8 @@ public class RequestAppointment extends Behaviour {
 			}
 
 			int appNumber = Integer.parseInt(reply.getContent());
-			agent.updateAppointment(new Appointment(appNumber, agent.getPriority(appNumber)));
+			agent.updateAppointment(
+					new Appointment(appNumber, agent.getPriority(appNumber)));
 		}
 	}
 
