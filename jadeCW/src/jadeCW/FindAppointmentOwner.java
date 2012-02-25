@@ -1,6 +1,5 @@
 package jadeCW;
 
-import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 
@@ -15,27 +14,32 @@ public class FindAppointmentOwner extends Behaviour {
 		this.agent = agent;
 		this.maxAppointmentNumber = maxAppointmentNumber;
 		stopQuerying = false;
-		lastAppointmentTry = agent.getAppointment().getNumber();
+		lastAppointmentTry = 0;
 	}
 	
 	@Override
 	public void action() {
-		++lastAppointmentTry;
-		if (lastAppointmentTry > maxAppointmentNumber) {
-			stopQuerying = true;
-			return;
-		}
-
-		ACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF);
-		msg.setContent(String.valueOf(lastAppointmentTry));
-		msg.addReceiver(agent.getProvider());
-		agent.send(msg);
-		
-		ACLMessage reply = agent.blockingReceive();
-		String aid = reply.getContent();
-		if (!aid.equals("")) {
-			
-			stopQuerying = true;
+		if (agent.hasAlocatedAppointment() && agent.hasAlocationProvider()) {
+			while (lastAppointmentTry <= maxAppointmentNumber && 
+					agent.getPriority(lastAppointmentTry) <= agent.getCurrentPriority()) {
+				++lastAppointmentTry;
+			}
+	
+			if (lastAppointmentTry > maxAppointmentNumber) {
+				stopQuerying = true;
+				return;
+			}
+	
+			ACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF);
+			msg.setContent(String.valueOf(lastAppointmentTry));
+			msg.addReceiver(agent.getProvider());
+			agent.send(msg);
+			ACLMessage reply = agent.blockingReceive();
+			String aid = reply.getContent();
+			if (!aid.equals(Appointment.OWNER_NOT_KNOWN)) {
+				stopQuerying = true;
+				agent.updateDesiredAppOwner(aid);
+			}
 		}
 	}
 

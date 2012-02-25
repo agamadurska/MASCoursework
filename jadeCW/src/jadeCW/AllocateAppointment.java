@@ -13,18 +13,20 @@ public class AllocateAppointment extends CyclicBehaviour {
 
 	@Override
 	public void action() {
-		ACLMessage request = agent.blockingReceive();		
-		ACLMessage reply = request.createReply();
-		
-		reply.setPerformative(ACLMessage.REFUSE);
-		Integer appNumber = agent.allocateAppointment(request.getSender());
-
-		if (appNumber != null) {
-			reply.setPerformative(ACLMessage.INFORM);
-			reply.setContent(appNumber.toString());
+		ACLMessage request = agent.blockingReceive();
+		if (request.getPerformative() == ACLMessage.REQUEST) {
+			ACLMessage reply = request.createReply();
+			
+			reply.setPerformative(ACLMessage.REFUSE);
+			Integer appNumber = agent.allocateAppointment(request.getSender());
+	
+			if (appNumber != null) {
+				reply.setPerformative(ACLMessage.INFORM);
+				reply.setContent(appNumber.toString());
+			}
+			agent.send(reply);
+		} else {
+			agent.putBack(request);
 		}
-
-		agent.send(reply);
 	}
-
 }

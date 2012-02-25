@@ -32,12 +32,13 @@ public class HospitalAgent extends Agent {
 	 * Register the maximum number of appointments.
 	 */
 	protected void setup() {
-		String serviceName = "allocate-appointments";
+	  String serviceName = "allocate-appointments";
 	  Object[] arguments =  getArguments();
 
 	  if (arguments != null) {
 	  	maxAppointments = Integer.parseInt((String)arguments[0]);
 	  	addBehaviour(new AllocateAppointment(this));
+	  	addBehaviour(new RespondToQuery(this));
 	  } else {
 	  	// Terminate if created without arguments.
 	  	doDelete();
@@ -109,7 +110,7 @@ public class HospitalAgent extends Agent {
 	protected void takeDown() {
 		for (Entry<AID, Integer> e : agentAllocation.entrySet()) {
 			System.out.println(getLocalName() + ":" + e.getKey().getLocalName() +
-					": Appointment " + e.getValue());
+					": Appointment " + (e.getValue() + 1));
 		}
 	}
 

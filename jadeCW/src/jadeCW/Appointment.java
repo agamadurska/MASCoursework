@@ -1,7 +1,8 @@
 package jadeCW;
 
-public class Appointment implements Comparable<Appointment> {
+public class Appointment {
 
+	public static final String OWNER_NOT_KNOWN = "Owner_not_known";
 	private final int number;
 	private int priority;
 
@@ -12,13 +13,11 @@ public class Appointment implements Comparable<Appointment> {
 		}
 	}
 
-	@Override
-	public int compareTo(Appointment appointment) {
-		return this.priority - appointment.priority;
-	}
-
 	public int getNumber() {
 		return number;
 	}
 
+	public int getPriority() {
+		return priority;
+	}
 }

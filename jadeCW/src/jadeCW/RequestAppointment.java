@@ -13,7 +13,7 @@ public class RequestAppointment extends Behaviour {
 
 	@Override
 	public void action() {
-		if(agent.hasAlocationProvider() && !agent.hasAlocatedAppointment()) {
+		if(agent.hasAlocationProvider()) {
 			ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 			msg.addReceiver(agent.getProvider());
 			agent.send(msg);
@@ -30,7 +30,7 @@ public class RequestAppointment extends Behaviour {
 
 	@Override
 	public boolean done() {
-		return false;
+		return agent.hasAlocatedAppointment();
 	}
 
 }

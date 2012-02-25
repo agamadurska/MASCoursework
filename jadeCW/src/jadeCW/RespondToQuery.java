@@ -15,17 +15,20 @@ public class RespondToQuery extends CyclicBehaviour {
 	@Override
 	public void action() {
 		ACLMessage request = agent.blockingReceive();
-		int appointmentNumber = Integer.parseInt(request.getContent());
-		AID aid = agent.getAppAgent(appointmentNumber);
-		
-		ACLMessage reply = request.createReply();
-		if (aid == null) {
-			reply.setContent("");
+		if (request.getPerformative() == ACLMessage.QUERY_REF) {
+			int appointmentNumber = Integer.parseInt(request.getContent());
+			AID aid = agent.getAppAgent(appointmentNumber);
+			
+			ACLMessage reply = request.createReply();
+			if (aid == null) {
+				reply.setContent(Appointment.OWNER_NOT_KNOWN);
+			} else {
+				reply.setContent(aid.getName());
+			}
+			reply.setPerformative(ACLMessage.INFORM);		
+			agent.send(reply);
 		} else {
-			reply.setContent(aid.getName());
+			agent.putBack(request);
 		}
-		reply.setPerformative(ACLMessage.INFORM);		
-		agent.send(reply);
 	}
-
 }

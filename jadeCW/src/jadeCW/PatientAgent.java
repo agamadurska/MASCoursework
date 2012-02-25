@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 
 import jade.core.AID;
@@ -18,10 +19,14 @@ import jade.util.leap.Iterator;
 
 public class PatientAgent extends Agent {
 	
+	private static final int DEFAULT_LOWEST_PRIORITY = -1;
+
 	private final Map<Integer, Integer> priorityMap =
 			new HashMap<Integer, Integer>();
 	private Appointment allocatedAppointment;
 	private AID provider;
+
+	private String desiredAppOwner;
 
 	protected void setup() {
 		Object[] arguments = getArguments();
@@ -29,6 +34,7 @@ public class PatientAgent extends Agent {
 			buildPriorities((String) arguments[0]);
 			subscribeToService("allocate-appointments");
 			addBehaviour(new RequestAppointment(this));
+			addBehaviour(new FindAppointmentOwner(this, 3));
 		} else {
 			// Terminate if created without arguments.
 			doDelete();
@@ -87,7 +93,7 @@ public class PatientAgent extends Agent {
 			String[] appNumbers = set.split(" ");
 			for (String number : appNumbers) {
 				if (!number.equals("")) {
-					priorityMap.put(Integer.parseInt(number), priority);
+					priorityMap.put(Integer.parseInt(number)-1, priority);
 				}
 			}
 			priority--;
@@ -109,12 +115,6 @@ public class PatientAgent extends Agent {
 	public Appointment getAppointment() {
 		return allocatedAppointment;
 	}
-	
-	protected void takeDown() {
-		System.out.println(getLocalName() + ": Appointment " +
-				(allocatedAppointment == null ? "null" :
-						allocatedAppointment.getNumber()));
-  }
 
 	public AID getProvider() {
 		return provider;
@@ -125,7 +125,21 @@ public class PatientAgent extends Agent {
 	}
 
 	public Integer getPriority(int appNumber) {
-		return priorityMap.get(appNumber);
+		return priorityMap.get(appNumber) ==  null ?
+				DEFAULT_LOWEST_PRIORITY : priorityMap.get(appNumber);
 	}
 
+	public Integer getCurrentPriority() {
+		return allocatedAppointment.getPriority();
+	}
+
+	public void updateDesiredAppOwner(String aid) {
+		this.desiredAppOwner = aid;
+	}
+
+	protected void takeDown() {
+		System.out.println(getLocalName() + ": Appointment " +
+				(allocatedAppointment == null ? "null" :
+						allocatedAppointment.getNumber() + 1));
+    }
 }
