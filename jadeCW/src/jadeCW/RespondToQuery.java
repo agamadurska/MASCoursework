@@ -23,10 +23,15 @@ public class RespondToQuery extends CyclicBehaviour {
 			
 			ACLMessage reply = request.createReply();
 			if (aid == null) {
-				reply.setContent(Appointment.OWNER_NOT_KNOWN);
+				reply.setContent(agent.getLocalName());
 			} else {
 				reply.setContent(aid.getName());
 			}
+
+			if (!agent.validAppointment(appointmentNumber)) {
+				reply.setContent(Appointment.OWNER_NOT_KNOWN);
+			}
+	
 			reply.setPerformative(ACLMessage.INFORM);		
 			agent.send(reply);
 		} else {

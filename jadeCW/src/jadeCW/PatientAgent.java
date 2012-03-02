@@ -159,4 +159,8 @@ public class PatientAgent extends Agent {
 	public String getDesiredAppOwner() {
 		return desiredAppOwner;
 	}
+
+	public void clearDesiredAppOwner() {
+		desiredAppOwner = null;
+	}
 }

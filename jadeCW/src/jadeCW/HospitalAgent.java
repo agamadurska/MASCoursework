@@ -114,4 +114,8 @@ public class HospitalAgent extends Agent {
 		}
 	}
 
+	public boolean validAppointment(int appointmentNumber) {
+		return appointmentNumber < maxAppointments;
+	}
+
 }
