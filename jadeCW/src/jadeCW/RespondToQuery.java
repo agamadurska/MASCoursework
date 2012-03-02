@@ -3,6 +3,7 @@ package jadeCW;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 public class RespondToQuery extends CyclicBehaviour {
 
@@ -14,8 +15,9 @@ public class RespondToQuery extends CyclicBehaviour {
 	
 	@Override
 	public void action() {
-		ACLMessage request = agent.blockingReceive();
-		if (request.getPerformative() == ACLMessage.QUERY_REF) {
+		MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.QUERY_REF);
+		ACLMessage request = agent.receive(template);
+		if (request != null) {
 			int appointmentNumber = Integer.parseInt(request.getContent());
 			AID aid = agent.getAppAgent(appointmentNumber);
 			
@@ -28,7 +30,7 @@ public class RespondToQuery extends CyclicBehaviour {
 			reply.setPerformative(ACLMessage.INFORM);		
 			agent.send(reply);
 		} else {
-			agent.putBack(request);
+			block();
 		}
 	}
 }

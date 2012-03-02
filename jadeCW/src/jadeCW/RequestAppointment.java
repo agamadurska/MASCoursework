@@ -23,9 +23,11 @@ public class RequestAppointment extends Behaviour {
 			msg.setConversationId(cid);
 			agent.send(msg);
 		}
+
 		if (requestingApp) {
-			MessageTemplate template = MessageTemplate.and( 
-		            MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+			MessageTemplate template = MessageTemplate.and(MessageTemplate.or(
+					MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+		            MessageTemplate.MatchPerformative(ACLMessage.REFUSE)),
 		            MessageTemplate.MatchConversationId(cid));
 			ACLMessage reply = agent.receive(template);
 			if (reply != null) {
