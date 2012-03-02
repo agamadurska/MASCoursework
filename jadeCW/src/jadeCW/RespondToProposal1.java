@@ -23,7 +23,12 @@ public class RespondToProposal1 extends CyclicBehaviour {
 			ACLMessage reply = request.createReply();
 			if (agent.getPriority(appNumber) <= agent.getPriority(proposedAppNumber)) {
 				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+				reply.setContent(appNumber+"");
 				agent.updateAppointment(new Appointment(proposedAppNumber, agent.getPriority(proposedAppNumber)));
+				ACLMessage hospitalNotification = new ACLMessage(ACLMessage.INFORM);
+				hospitalNotification.addReceiver(agent.getProvider());
+				hospitalNotification.setContent(proposedAppNumber+"");
+				agent.send(hospitalNotification);
 			} else {
 				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
 			}

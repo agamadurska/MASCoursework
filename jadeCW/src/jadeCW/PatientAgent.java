@@ -37,6 +37,8 @@ public class PatientAgent extends Agent {
 			subscribeToService("allocate-appointments");
 			addBehaviour(new RequestAppointment(this));
 			addBehaviour(new FindAppointmentOwner(this, 2));
+			addBehaviour(new ProposeSwap(this));
+			addBehaviour(new RespondToProposal1(this));
 		} else {
 			// Terminate if created without arguments.
 			doDelete();
