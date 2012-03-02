@@ -25,6 +25,8 @@ public class PatientAgent extends Agent {
 			new HashMap<Integer, Integer>();
 	private Appointment allocatedAppointment;
 	private AID provider;
+	protected static int cidCnt = 0;
+	String cidBase;
 
 	private String desiredAppOwner;
 
@@ -34,7 +36,7 @@ public class PatientAgent extends Agent {
 			buildPriorities((String) arguments[0]);
 			subscribeToService("allocate-appointments");
 			addBehaviour(new RequestAppointment(this));
-			addBehaviour(new FindAppointmentOwner(this, 3));
+			//addBehaviour(new FindAppointmentOwner(this, 3));
 		} else {
 			// Terminate if created without arguments.
 			doDelete();
@@ -100,6 +102,13 @@ public class PatientAgent extends Agent {
 		}
 	}
 
+    String genCID() { 
+        if (cidBase==null) {
+           cidBase = getLocalName() + hashCode() +
+                        System.currentTimeMillis()%10000 + "_";
+        }
+        return  cidBase + (cidCnt++); 
+    }
 	public boolean hasAlocatedAppointment() {
 		return allocatedAppointment != null;
 	}
@@ -142,4 +151,12 @@ public class PatientAgent extends Agent {
 				(allocatedAppointment == null ? "null" :
 						allocatedAppointment.getNumber() + 1));
     }
+
+	public boolean knowsDesiredAppOwner() {
+		return desiredAppOwner != null;
+	}
+
+	public String getDesiredAppOwner() {
+		return desiredAppOwner;
+	}
 }

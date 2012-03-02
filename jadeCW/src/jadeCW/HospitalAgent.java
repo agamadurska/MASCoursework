@@ -38,7 +38,7 @@ public class HospitalAgent extends Agent {
 	  if (arguments != null) {
 	  	maxAppointments = Integer.parseInt((String)arguments[0]);
 	  	addBehaviour(new AllocateAppointment(this));
-	  	addBehaviour(new RespondToQuery(this));
+	  	//addBehaviour(new RespondToQuery(this));
 	  } else {
 	  	// Terminate if created without arguments.
 	  	doDelete();

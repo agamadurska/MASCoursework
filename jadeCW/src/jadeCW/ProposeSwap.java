@@ -1,5 +1,6 @@
 package jadeCW;
 
+import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 
@@ -14,14 +15,13 @@ public class ProposeSwap extends Behaviour {
 	@Override
 	public void action() {
 		Appointment appointment = agent.getAppointment();
-		int priority = agent.getPriority(appointment.getNumber());
 		
-		// TODO: Get a more preferred appointment.
-		
-		ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
-		msg.setContent(String.valueOf(appointment.getNumber()));
-		msg.addReceiver(agent.getProvider());
-		agent.send(msg);
+		if (agent.knowsDesiredAppOwner()) {
+			ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
+			msg.setContent(String.valueOf(appointment.getNumber()));
+			msg.addReceiver(new AID(agent.getDesiredAppOwner(), AID.ISLOCALNAME));
+			agent.send(msg);
+		}
 	}
 
 	@Override
