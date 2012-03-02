@@ -17,6 +17,7 @@ public class RespondToProposal1 extends CyclicBehaviour {
 		MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.PROPOSE);
 		ACLMessage request = agent.receive(template);
 		if (request != null) {
+			System.out.println(agent.getLocalName() + " received propsal");
 			int proposedAppNumber = Integer.parseInt(request.getContent());
 			int appNumber = agent.getAppointment().getNumber();
 			

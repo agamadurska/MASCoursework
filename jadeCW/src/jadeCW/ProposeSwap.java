@@ -20,6 +20,7 @@ public class ProposeSwap extends Behaviour {
 		Appointment appointment = agent.getAppointment();
 		String cid = agent.getLocalName() + "proposed_swap";
 		if (agent.knowsDesiredAppOwner() && !proposedSwap) {
+			System.out.println(agent.getLocalName() + " proposed swap to agent " + agent.getDesiredAppOwner());
 			proposedSwap = true;
 			ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
 			msg.setContent(String.valueOf(appointment.getNumber()));
@@ -38,6 +39,8 @@ public class ProposeSwap extends Behaviour {
 				proposedSwap = false;
 				agent.clearDesiredAppOwner();
 				if (reply.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
+					System.out.println(agent.getLocalName() + " proposed swap to agent " +
+							agent.getDesiredAppOwner() + " and got accepted");
 					int appNumber = Integer.parseInt(reply.getContent());
 					agent.updateAppointment(
 							new Appointment(appNumber, agent.getPriority(appNumber)));
@@ -48,6 +51,8 @@ public class ProposeSwap extends Behaviour {
 						agent.send(hospitalNotification);
 					}
 				} else {
+					System.out.println(agent.getLocalName() + " proposed swap to agent " +
+							agent.getDesiredAppOwner() + " and got refused :(");
 					String owner = reply.getContent();
 					agent.updateDesiredAppOwner(owner);
 				}

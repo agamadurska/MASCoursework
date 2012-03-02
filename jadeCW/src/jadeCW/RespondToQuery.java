@@ -25,7 +25,7 @@ public class RespondToQuery extends CyclicBehaviour {
 			if (aid == null) {
 				reply.setContent(agent.getLocalName());
 			} else {
-				reply.setContent(aid.getName());
+				reply.setContent(aid.getLocalName());
 			}
 
 			if (!agent.validAppointment(appointmentNumber)) {

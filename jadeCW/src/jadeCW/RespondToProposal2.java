@@ -25,7 +25,7 @@ public class RespondToProposal2 extends CyclicBehaviour {
 				agent.allocateAppointment(proposedAppNumber, request.getSender());
 			} else {
 				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);	
-				reply.setContent(agent.getAppAgent(proposedAppNumber).getName());
+				reply.setContent(agent.getAppAgent(proposedAppNumber).getLocalName());
 			}
 			agent.send(reply);
 		} else {
