@@ -47,6 +47,9 @@ public class ProposeSwap extends Behaviour {
 						hospitalNotification.setContent(appNumber+"");
 						agent.send(hospitalNotification);
 					}
+				} else {
+					String owner = reply.getContent();
+					agent.updateDesiredAppOwner(owner);
 				}
 			} else {
 				block();
