@@ -36,10 +36,10 @@ public class RequestAppointment extends Behaviour {
 			ACLMessage reply = agent.receive(template);
 			if (reply != null) {
 				requestingApp = false;
+				done = true;
 				if (reply.getPerformative() == ACLMessage.REFUSE) {
 					System.out.println(agent.getLocalName() + ": was refused an appointment from " +
 							agent.getProvider().getLocalName());
-					done = true;
 					return;
 				}
 	
@@ -56,7 +56,7 @@ public class RequestAppointment extends Behaviour {
 
 	@Override
 	public boolean done() {
-		return agent.hasAlocatedAppointment() || done;
+		return done;
 	}
 
 }
