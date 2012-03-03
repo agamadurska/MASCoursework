@@ -17,13 +17,25 @@ public class RespondToProposal2 extends CyclicBehaviour {
 		MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.PROPOSE);
 		ACLMessage request = agent.receive(template);
 		if (request != null) {
-			int proposedAppNumber = Integer.parseInt(request.getContent());
+			System.out.println(agent.getLocalName() + ": received swap proposal from agent " +
+					request.getSender().getLocalName());
 			
+			int proposedAppNumber = Integer.parseInt(request.getContent());
 			ACLMessage reply = request.createReply();
+
 			if (agent.isAppAvailable(proposedAppNumber)) {
+				System.out.println(agent.getLocalName() + ": accepted swap proposal from " +
+						request.getSender().getLocalName());
+
 				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
-				agent.allocateAppointment(proposedAppNumber, request.getSender());
+				agent.updateAlocation(proposedAppNumber, request.getSender());
 			} else {
+				System.out.println(agent.getLocalName() + ": rejected swap proposal from " +
+						request.getSender().getLocalName() + " and notified " +
+						request.getSender().getLocalName() +
+						" that the owner of the desired appointment is " +
+						agent.getAppAgent(proposedAppNumber).getLocalName());
+
 				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);	
 				reply.setContent(agent.getAppAgent(proposedAppNumber).getLocalName());
 			}

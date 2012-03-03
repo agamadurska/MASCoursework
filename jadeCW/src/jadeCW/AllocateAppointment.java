@@ -17,12 +17,17 @@ public class AllocateAppointment extends CyclicBehaviour {
 		MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 		ACLMessage request = agent.receive(template);
 		if (request != null) {
+			System.out.println(agent.getLocalName() +
+					": received a request for an appointment from " + request.getSender().getLocalName());
 			ACLMessage reply = request.createReply();
 			reply.setPerformative(ACLMessage.REFUSE);
 			Integer appNumber = agent.allocateAppointment(request.getSender());
 			if (appNumber != null) {
 				reply.setPerformative(ACLMessage.INFORM);
 				reply.setContent(appNumber.toString());
+				System.out.println(agent.getLocalName() +
+						": allocated appointment " + (appNumber+1) + " to "
+						+ request.getSender().getLocalName());
 			}
 			agent.send(reply);
 		} else {

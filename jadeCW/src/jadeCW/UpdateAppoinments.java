@@ -18,6 +18,9 @@ public class UpdateAppoinments extends CyclicBehaviour {
 		MessageTemplate template = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 		ACLMessage request = agent.receive(template);
 		if (request != null) {
+			System.out.println(agent.getLocalName() +
+					": was notified about new appointment allocation by " +
+					request.getSender().getLocalName());
 			int appointmentNumber = Integer.parseInt(request.getContent());
 			AID sender = request.getSender();
 			agent.allocateAppointment(appointmentNumber, sender);

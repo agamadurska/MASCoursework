@@ -20,10 +20,15 @@ public class ProposeSwap extends Behaviour {
 		Appointment appointment = agent.getAppointment();
 		String cid = agent.getLocalName() + "proposed_swap";
 		if (agent.knowsDesiredAppOwner() && !proposedSwap) {
-			System.out.println(agent.getLocalName() + " proposed swap to agent " + agent.getDesiredAppOwner());
+			System.out.println(agent.getLocalName() + ": proposed swap to agent " +
+					agent.getDesiredAppOwner());
 			proposedSwap = true;
 			ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
-			msg.setContent(String.valueOf(appointment.getNumber()));
+			if (agent.getDesiredAppOwner().equals(agent.getProvider().getLocalName())) {
+				msg.setContent(agent.getDesiredAppNumber()+"");
+			} else {
+				msg.setContent(String.valueOf(appointment.getNumber()));
+			}
 			msg.addReceiver(new AID(agent.getDesiredAppOwner(), AID.ISLOCALNAME));
 			msg.setConversationId(cid);
 			agent.send(msg);
@@ -37,11 +42,12 @@ public class ProposeSwap extends Behaviour {
 			ACLMessage reply = agent.receive(template);
 			if (reply != null) {
 				proposedSwap = false;
+				String desiredAppOwner = agent.getDesiredAppOwner();
 				agent.clearDesiredAppOwner();
 				if (reply.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
-					System.out.println(agent.getLocalName() + " proposed swap to agent " +
-							agent.getDesiredAppOwner() + " and got accepted");
-					int appNumber = Integer.parseInt(reply.getContent());
+					System.out.println(agent.getLocalName() + ": swap with agent " +
+							desiredAppOwner + " got accepted by " + desiredAppOwner);
+					int appNumber = agent.getDesiredAppNumber();
 					agent.updateAppointment(
 							new Appointment(appNumber, agent.getPriority(appNumber)));
 					if (!reply.getSender().equals(agent.getProvider())) {
@@ -51,8 +57,8 @@ public class ProposeSwap extends Behaviour {
 						agent.send(hospitalNotification);
 					}
 				} else {
-					System.out.println(agent.getLocalName() + " proposed swap to agent " +
-							agent.getDesiredAppOwner() + " and got refused :(");
+					System.out.println(agent.getLocalName() + ": swap with agent " +
+							desiredAppOwner + " got refused by " + desiredAppOwner);
 					String owner = reply.getContent();
 					agent.updateDesiredAppOwner(owner);
 				}

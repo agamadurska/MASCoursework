@@ -6,6 +6,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPANames;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.Property;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 import java.util.HashMap;
@@ -23,6 +24,7 @@ public class HospitalAgent extends Agent {
 	
 	private int maxAppointments;
 	private int nextAvailableAppointment = 0;
+	private int allocatedAppointments = 0;
 	private final Map<AID, Integer> agentAllocation =
 			new HashMap<AID, Integer>();
 	private final Map<Integer, AID> appAllocation =
@@ -57,7 +59,7 @@ public class HospitalAgent extends Agent {
 	  	// Not sure if this is needed but was in example so keeping for now.
 	  	serviceDescription.setType("allocate-appointments");
 	  	serviceDescription.addOntologies("allocate-appointments-ontology");
-
+	  	serviceDescription.addProperties(new Property("max-app", maxAppointments));
 	  	// Agents that want to use this service need to "speak" the FIPA-SL
 	  	// language.
 	  	serviceDescription.addLanguages(FIPANames.ContentLanguage.FIPA_SL);
@@ -73,11 +75,16 @@ public class HospitalAgent extends Agent {
 
 	public Integer allocateAppointment(AID sender) {
 		if (appointmentAvailable()) {
+			allocatedAppointments++;
 			Integer app = nextAvailableAppointment();
 			agentAllocation.put(sender, app);
 			appAllocation.put(app, sender);
-			while (appAllocation.get(nextAvailableAppointment) != null) {
+			while (appointmentAvailable() && 
+					appAllocation.get(nextAvailableAppointment) != null) {
 				++nextAvailableAppointment;
+				if (nextAvailableAppointment >= maxAppointments) {
+					nextAvailableAppointment = 0;
+				}
 			}
 			return app;
 		}
@@ -87,8 +94,13 @@ public class HospitalAgent extends Agent {
 	public void allocateAppointment(int appointmentNumber, AID sender) {
 		agentAllocation.put(sender, appointmentNumber);
 		appAllocation.put(appointmentNumber, sender);
-		while (appAllocation.get(nextAvailableAppointment) != null) {
+		while (appointmentAvailable() && 
+				appAllocation.get(nextAvailableAppointment) != null) {
+			System.out.println("looping2");
 			++nextAvailableAppointment;
+			if (nextAvailableAppointment >= maxAppointments) {
+				nextAvailableAppointment = 0;
+			}
 		}
 	}
 	
@@ -106,7 +118,7 @@ public class HospitalAgent extends Agent {
 	}
 
 	private boolean appointmentAvailable() {
-		return nextAvailableAppointment <= maxAppointments;
+		return allocatedAppointments < maxAppointments;
 	}
 
 	protected void takeDown() {
@@ -116,8 +128,28 @@ public class HospitalAgent extends Agent {
 		}
 	}
 
+	public void printAllocation() {
+		for (Entry<AID, Integer> e : agentAllocation.entrySet()) {
+			System.out.println(getLocalName() + ":" + e.getKey().getLocalName() +
+					": Appointment " + (e.getValue() + 1));
+		}
+	}
+
 	public boolean validAppointment(int appointmentNumber) {
 		return appointmentNumber < maxAppointments;
+	}
+
+	public void updateAlocation(int appointmentNumber, AID sender) {
+		appAllocation.remove(agentAllocation.get(sender));
+		agentAllocation.put(sender, appointmentNumber);
+		appAllocation.put(appointmentNumber, sender);
+		while (appointmentAvailable() && 
+				appAllocation.get(nextAvailableAppointment) != null) {
+			++nextAvailableAppointment;
+			if (nextAvailableAppointment >= maxAppointments) {
+				nextAvailableAppointment = 0;
+			}
+		}
 	}
 
 }

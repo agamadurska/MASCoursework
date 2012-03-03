@@ -36,12 +36,15 @@ public class FindAppointmentOwner extends Behaviour {
 				stopQuerying = true;
 				return;
 			}
+			System.out.println(agent.getLocalName() + ": requesting owner of appointment " +
+					(lastAppointmentTry+1) + " from " + agent.getProvider().getLocalName());
 			requestedOwner = true;
 			cid = agent.getLocalName() + "find-app-owner" + reqNum;
 			ACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF);
 			msg.setContent(String.valueOf(lastAppointmentTry));
 			msg.addReceiver(agent.getProvider());
 			msg.setConversationId(cid);
+			agent.updateDesiredAppNumber(lastAppointmentTry);
 			agent.send(msg);
 			reqNum++;
 			lastAppointmentTry++;
@@ -57,6 +60,8 @@ public class FindAppointmentOwner extends Behaviour {
 				if (!aid.equals(Appointment.OWNER_NOT_KNOWN)) {
 					stopQuerying = true;
 					agent.updateDesiredAppOwner(aid);
+					System.out.println(agent.getLocalName() + ": learned that owner of appointment " +
+							(lastAppointmentTry) + " is " + aid);
 				}
 				requestedOwner = false;
 			} else {

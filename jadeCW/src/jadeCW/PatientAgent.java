@@ -1,16 +1,13 @@
 package jadeCW;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
 
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.Property;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
@@ -20,6 +17,7 @@ import jade.util.leap.Iterator;
 public class PatientAgent extends Agent {
 	
 	private static final int DEFAULT_LOWEST_PRIORITY = -1;
+	private static int maxAppointments;
 
 	private final Map<Integer, Integer> priorityMap =
 			new HashMap<Integer, Integer>();
@@ -29,6 +27,16 @@ public class PatientAgent extends Agent {
 	String cidBase;
 
 	private String desiredAppOwner;
+	private int desiredAppNumber;
+	private boolean currentlySwapping;
+
+	public boolean isCurrentlySwapping() {
+		return currentlySwapping;
+	}
+
+	public void setCurrentlySwapping(boolean currentlySwapping) {
+		this.currentlySwapping = currentlySwapping;
+	}
 
 	protected void setup() {
 		Object[] arguments = getArguments();
@@ -36,7 +44,6 @@ public class PatientAgent extends Agent {
 			buildPriorities((String) arguments[0]);
 			subscribeToService("allocate-appointments");
 			addBehaviour(new RequestAppointment(this));
-			addBehaviour(new FindAppointmentOwner(this, 2));
 			addBehaviour(new ProposeSwap(this));
 			addBehaviour(new RespondToProposal1(this));
 		} else {
@@ -67,22 +74,33 @@ public class PatientAgent extends Agent {
 									DFAgentDescription dfd = results[i];
 									AID provider = dfd.getName();
 									// The same agent may provide several services;
-									
 									Iterator it = dfd.getAllServices();
 									while (it.hasNext()) {
 					  					ServiceDescription sd = (ServiceDescription) it.next();
 					  					if (sd.getType().equals(serviceType)) {
 					  						storeProvider(provider);
+					  						Iterator propertyIt = sd.getAllProperties();
+					  						while (propertyIt.hasNext()){
+					  							Property p = (Property) propertyIt.next();
+					  							if (p.getName().equals("max-app")) {
+					  								storeMaxApp(Integer.parseInt((String)p.getValue())); 
+					  							}
+					  						}
 					  					}
 					  				}
 					  			}
-					  		}
-							System.out.println();
+					  		 }
+							System.out.println(getLocalName() + ": registered a list of hospitals");
 						}catch (FIPAException fe) {
 							fe.printStackTrace();
 						}
 					}
 		});
+	}
+
+	protected void storeMaxApp(int maxAppointments) {
+		this.maxAppointments = maxAppointments;
+		addBehaviour(new FindAppointmentOwner(this, maxAppointments-1));
 	}
 
 	protected void storeProvider(AID provider) {
@@ -104,13 +122,6 @@ public class PatientAgent extends Agent {
 		}
 	}
 
-    String genCID() { 
-        if (cidBase==null) {
-           cidBase = getLocalName() + hashCode() +
-                        System.currentTimeMillis()%10000 + "_";
-        }
-        return  cidBase + (cidCnt++); 
-    }
 	public boolean hasAlocatedAppointment() {
 		return allocatedAppointment != null;
 	}
@@ -164,5 +175,13 @@ public class PatientAgent extends Agent {
 
 	public void clearDesiredAppOwner() {
 		desiredAppOwner = null;
+	}
+
+	public void updateDesiredAppNumber(int desiredAppNumber) {
+		this.desiredAppNumber = desiredAppNumber;
+	}
+
+	public int getDesiredAppNumber() {
+		return desiredAppNumber;
 	}
 }

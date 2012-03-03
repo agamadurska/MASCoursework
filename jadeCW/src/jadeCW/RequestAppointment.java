@@ -8,9 +8,11 @@ public class RequestAppointment extends Behaviour {
 
 	private final PatientAgent agent;
 	private boolean requestingApp = false;
+	private boolean done;
 
 	RequestAppointment(PatientAgent agent) {
 		this.agent = agent;
+		this.done = false;
 	}
 
 	@Override
@@ -18,6 +20,8 @@ public class RequestAppointment extends Behaviour {
 		ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 		String cid = agent.getLocalName() + "reqapp";
 		if(agent.hasAlocationProvider() && !requestingApp) {
+			System.out.println(agent.getLocalName() + ": requesting appointment from " +
+					agent.getProvider().getLocalName());
 			requestingApp = true;
 			msg.addReceiver(agent.getProvider());
 			msg.setConversationId(cid);
@@ -33,10 +37,15 @@ public class RequestAppointment extends Behaviour {
 			if (reply != null) {
 				requestingApp = false;
 				if (reply.getPerformative() == ACLMessage.REFUSE) {
+					System.out.println(agent.getLocalName() + ": was refused an appointment from " +
+							agent.getProvider().getLocalName());
+					done = true;
 					return;
 				}
 	
 				int appNumber = Integer.parseInt(reply.getContent());
+				System.out.println(agent.getLocalName() + ": was granted appointment " + (appNumber+1) +
+						" from " + agent.getProvider().getLocalName());
 				agent.updateAppointment(
 						new Appointment(appNumber, agent.getPriority(appNumber)));
 			} else {
@@ -47,7 +56,7 @@ public class RequestAppointment extends Behaviour {
 
 	@Override
 	public boolean done() {
-		return agent.hasAlocatedAppointment();
+		return agent.hasAlocatedAppointment() || done;
 	}
 
 }

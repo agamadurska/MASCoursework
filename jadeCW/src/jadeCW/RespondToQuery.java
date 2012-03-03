@@ -31,7 +31,9 @@ public class RespondToQuery extends CyclicBehaviour {
 			if (!agent.validAppointment(appointmentNumber)) {
 				reply.setContent(Appointment.OWNER_NOT_KNOWN);
 			}
-	
+			System.out.println(agent.getLocalName() + ": notified " +
+					request.getSender().getLocalName() + " that owner of appointment " +
+					(appointmentNumber + 1) + " is " + reply.getContent());
 			reply.setPerformative(ACLMessage.INFORM);		
 			agent.send(reply);
 		} else {
